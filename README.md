@@ -19,7 +19,7 @@ roadmap for the assessment.
 
 Run one of the MS deployment scripts to create the resourceGroup
 meeting the objective of the assessment. Connect to your Azure 
-subscription. Enter <name> and <location>
+subscription. Enter name and location
 
 Example:
 Open Windows powershell. Go to directory containing deployment scripts
