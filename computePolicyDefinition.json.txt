@@ -1,0 +1,52 @@
+{
+  "policyRule": {
+    "if": {
+      "not": {
+        "field": "type",
+        "in": "[parameters('listOfResourceTypesAllowed')]"
+      }
+    },
+    "then": {
+      "effect": "deny"
+    }
+  },
+  "parameters": {
+    "listOfResourceTypesAllowed": {
+      "type": "Array",
+      "metadata": {
+        "displayName": "Allowed resource types in Compute",
+        "description": "The list of resource types that can be deployed.",
+        "strongType": "resourceTypes"
+      }
+    }
+  },
+  "metadata": {
+    "category": "Compute"
+  }
+}
+
+v2
+{
+  "policyRule": {
+    "if": {
+      "field": "type",
+      "in": "[parameters('listOfResourceTypesAllowed')]"
+    },
+    "then": {
+      "effect": "auditIfNotExists"
+    }
+  },
+  "parameters": {
+    "listOfResourceTypesAllowed": {
+      "type": "Array",
+      "metadata": {
+        "displayName": "Allowed resource types in Compute",
+        "description": "The list of resource types that can be deployed.",
+        "strongType": "resourceTypes"
+      }
+    }
+  },
+  "metadata": {
+    "category": "Compute"
+  }
+}
