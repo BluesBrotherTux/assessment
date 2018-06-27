@@ -1,0 +1,30 @@
+{
+  "properties": {
+    "policyType": "Custom",
+    "description": "This policy enables you to specify the resource types that sentia-assessment can deploy.",
+    "parameters": {
+      "namePattern": {
+        "type": "String",
+        "metadata": {
+          "description": "Pattern to use for resourceTypes. Can include wildcard (*).",
+          "displayName": "Allowed resource types",
+          "strongType": "resourceTypes"
+        }
+      }
+    },
+    "policyRule": {
+      "if": {
+        "not": {
+          "field": "type",
+          "like": "[parameters('namePattern')]"
+        }
+      },
+      "then": {
+        "effect": "deny"
+      }
+    }
+  },
+  "id": "/subscriptions/dd702314-37de-4391-9f9f-dab31d2372ff/providers/Microsoft.Authorization/policyDefinitions/sentiaRestrictResourceTypesPolicy",
+  "type": "Microsoft.Authorization/policyDefinitions",
+  "name": "sentiaRestrictResourceTypesPolicy"
+}
