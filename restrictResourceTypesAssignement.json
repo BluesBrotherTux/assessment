@@ -1,0 +1,15 @@
+{
+  "properties": {
+    "displayName": "Restrict resourceType for subscription",
+    "description": "Restrict resourceTypes for subscription to compute, network and storage",
+    "metadata": {
+      "assignedBy": "Ernst"
+    },
+    "policyDefinitionId": "/subscriptions/dd702314-37de-4391-9f9f-dab31d2372ff/providers/Microsoft.Authorization/policyDefinitions/sentiaRestrictResourceTypesPolicy",
+    "parameters": {
+      "namePattern": {
+        "value": "Microsoft.Compute"
+      }
+    }
+  }
+}
