@@ -1,0 +1,51 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+		"storageNamePrefix": {
+			"value": "sentia"
+		},
+		"storageAccountType": {
+			"value": "Standard_LRS"
+		},
+		"storageAccountKind": {
+			"value": "StorageV2"
+		},
+		"storageAccessTier": {
+			"value": "Hot"
+		},
+		"httpsTrafficOnlyEnabled": {
+			"value": true
+		},
+		"networkAclsBypass": {
+			"value": "AzureServices"
+		},
+		"networkAclsDefaultAction": {
+			"value": "Deny"
+		},
+        "virtualNetworks_name": {
+            "value": "VN_sentia_assessment_ejvd"
+        },
+        "virtualNetworks_prefix": {
+            "value": "172.16.0.0/12"
+        },
+        "subnets_GatewaySubnet_name": {
+            "value": "GatewaySubnet"
+        },
+        "subnets_GatewaySubnet_prefix": {
+            "value": "172.16.0.0/29"
+        },
+        "subnets_subnetOne_name": {
+            "value": "subnet-one"
+        },
+        "subnets_subnetOne_prefix": {
+            "value": "172.16.64.0/18"
+        },
+        "subnets_subnetTwo_name": {
+            "value": "subnet-two"
+        },
+        "subnets_subnetTwo_prefix": {
+            "value": "172.16.128.0/18"
+        }
+    }
+}

@@ -1,0 +1,304 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "storageNamePrefix": {
+            "type": "string",
+            "metadata": {
+                "description": "The prefix string to add to a generated string that is unique to the resourceGroup."
+            }
+        },
+        "storageAccountType": {
+            "type": "string"
+        },
+        "storageAccountKind": {
+            "type": "string"
+        },
+        "storageAccessTier": {
+            "type": "string"
+        },
+        "httpsTrafficOnlyEnabled": {
+            "type": "bool"
+        },
+        "networkAclsBypass": {
+            "type": "string"
+        },
+        "networkAclsDefaultAction": {
+            "type": "string"
+        },
+        "virtualNetworks_name": {
+            "defaultValue": "VN_sentia-assessment-ejvd",
+            "type": "String"
+        },
+        "virtualNetworks_prefix": {
+            "defaultValue": "172.16.0.0/12",
+            "type": "String"
+        },
+        "subnets_GatewaySubnet_name": {
+            "defaultValue": "GatewaySubnet",
+            "type": "String"
+        },
+        "subnets_GatewaySubnet_prefix": {
+            "defaultValue": "172.16.0.0/29",
+            "type": "String"
+        },
+        "subnets_subnetOne_name": {
+            "defaultValue": "subnet-one",
+            "type": "String"
+        },
+        "subnets_subnetOne_prefix": {
+            "defaultValue": "172.16.64.0/18",
+            "type": "String"
+        },
+        "subnets_subnetTwo_name": {
+            "defaultValue": "subnet-two",
+            "type": "String"
+        },
+        "subnets_subnetTwo_prefix": {
+            "defaultValue": "172.16.128.0/18",
+            "type": "String"
+        }
+    },
+    "variables": {
+        "storageName": "[toLower( concat( parameters('storageNamePrefix'), uniqueString(resourceGroup().id) ) )]",
+        "location": "[resourceGroup().location]"
+	},
+    "resources": [
+        {
+            "apiVersion": "2018-02-01",
+            "name": "[parameters('virtualNetworks_name')]",
+            "location": "[variables('location')]",
+			"type": "Microsoft.Network/virtualNetworks",
+            "tags": {
+                "Environment": "Test",
+                "Company": "Sentia",
+                "Purpose": "Assessment",
+                "Applicant": "Ernst J. van Dijk"
+            },
+            "scale": null,
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('virtualNetworks_prefix')]"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[parameters('subnets_GatewaySubnet_name')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnets_GatewaySubnet_prefix')]",
+                            "serviceEndpoints": []
+                        }
+                    },
+                    {
+                        "name": "[parameters('subnets_subnetOne_name')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnets_subnetOne_prefix')]",
+                            "serviceEndpoints": [
+                                {
+                                    "service": "Microsoft.AzureCosmosDB",
+                                    "locations": [
+                                        "*"
+                                    ]
+                                },
+                                {
+                                    "service": "Microsoft.KeyVault",
+                                    "locations": [
+                                        "*"
+                                    ]
+                                },
+                                {
+                                    "service": "Microsoft.ServiceBus",
+                                    "locations": [
+                                        "*"
+                                    ]
+                                },
+                                {
+                                    "service": "Microsoft.Sql",
+                                    "locations": [
+                                        "westeurope"
+                                    ]
+                                },
+                                {
+                                    "service": "Microsoft.Storage",
+                                    "locations": [
+                                        "westeurope",
+                                        "northeurope"
+                                    ]
+                                },
+                                {
+                                    "service": "Microsoft.EventHub",
+                                    "locations": [
+                                        "*"
+                                    ]
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "[parameters('subnets_subnetTwo_name')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnets_subnetTwo_prefix')]",
+                            "serviceEndpoints": [
+                                {
+                                    "service": "Microsoft.Storage",
+                                    "locations": [
+                                        "westeurope",
+                                        "northeurope"
+                                    ]
+                                }
+                            ]
+                        }
+                    },
+                ],
+                "virtualNetworkPeerings": [],
+                "enableDdosProtection": false,
+                "enableVmProtection": false
+            },
+            "dependsOn": []
+        },
+        {
+            "apiVersion": "2018-02-01",
+            "name": "[variables('storageName')]",
+            "location": "[variables('location')]",
+            "type": "Microsoft.Storage/storageAccounts",
+            "sku": {
+                "name": "[parameters('storageAccountType')]",
+                "tier": "Standard"
+			},
+            "kind": "[parameters('storageAccountKind')]",
+            "tags": {
+                "Environment": "Test",
+                "Company": "Sentia",
+                "Purpose": "Assessment",
+                "Applicant": "Ernst J. van Dijk"
+            },
+            "scale": null,
+            "properties": {
+                "supportsHttpsTrafficOnly": "[parameters('httpsTrafficOnlyEnabled')]",
+                "accessTier": "[parameters('storageAccessTier')]",
+                "encryption": {
+                    "services": {
+                        "blob": {
+                            "enabled": true
+                        },
+                        "file": {
+                            "enabled": true
+                        }
+                    },
+                    "keySource": "Microsoft.Storage"
+                },
+                "networkAcls": {
+                    "bypass": "[parameters('networkAclsBypass')]",
+                    "defaultAction": "[parameters('networkAclsDefaultAction')]",
+                    "ipRules": [],
+                    "virtualNetworkRules": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_name'), parameters('subnets_subnetOne_name'))]",
+                            "action": "allow"
+                        },
+                        {
+                            "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_name'), parameters('subnets_subnetTwo_name'))]",
+                            "action": "allow"
+                        }
+                    ],
+                },
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_name'), parameters('subnets_subnetOne_name'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_name'), parameters('subnets_subnetTwo_name'))]"
+            ]
+        },
+        {
+            "apiVersion": "2018-02-01",
+            "name": "[concat(parameters('virtualNetworks_name'), '/', parameters('subnets_GatewaySubnet_name'))]",
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "scale": null,
+            "properties": {
+                "addressPrefix": "[parameters('subnets_GatewaySubnet_prefix')]",
+                "serviceEndpoints": []
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_name'))]"
+            ]
+        },
+        {
+            "apiVersion": "2018-02-01",
+            "name": "[concat(parameters('virtualNetworks_name'), '/', parameters('subnets_subnetOne_name'))]",
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "scale": null,
+            "properties": {
+                "addressPrefix": "[parameters('subnets_subnetOne_prefix')]",
+                "serviceEndpoints": [
+                    {
+                        "service": "Microsoft.AzureCosmosDB",
+                        "locations": [
+                            "*"
+                        ]
+                    },
+                    {
+                        "service": "Microsoft.KeyVault",
+                        "locations": [
+                            "*"
+                        ]
+                    },
+                    {
+                        "service": "Microsoft.ServiceBus",
+                        "locations": [
+                            "*"
+                        ]
+                    },
+                    {
+                        "service": "Microsoft.Sql",
+                        "locations": [
+                            "westeurope"
+                        ]
+                    },
+                    {
+                        "service": "Microsoft.Storage",
+                        "locations": [
+                            "westeurope",
+                            "northeurope"
+                        ]
+                    },
+                    {
+                        "service": "Microsoft.EventHub",
+                        "locations": [
+                            "*"
+                        ]
+                    }
+                ]
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_name'))]"
+            ]
+        },
+        {
+            "apiVersion": "2018-02-01",
+            "name": "[concat(parameters('virtualNetworks_name'), '/', parameters('subnets_subnetTwo_name'))]",
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "scale": null,
+            "properties": {
+                "addressPrefix": "[parameters('subnets_subnetTwo_prefix')]",
+                "serviceEndpoints": [
+                    {
+                        "service": "Microsoft.Storage",
+                        "locations": [
+                            "westeurope",
+                            "northeurope"
+                        ]
+                    }
+                ]
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_name'))]"
+            ]
+        }
+    ],
+    "outputs": {
+        "storageAccountName": {
+            "type": "string",
+            "value": "[variables('storageName')]"
+        }
+    }
+}
