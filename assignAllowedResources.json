@@ -1,0 +1,10 @@
+{
+  "properties": {
+    "displayName": "Allowed resources for Sentia assessment",
+    "description": "Allowed resources for Sentia assessment Compute, Network and Storage",
+    "metadata": {
+      "assignedBy": "EJvD"
+    },
+    "policyDefinitionId": "/subscriptions/dd702314-37de-4391-9f9f-dab31d2372ff/providers/Microsoft.Authorization/policySetDefinitions/1e990246-58b2-43b4-a202-585bffca71ac"
+  }
+}
